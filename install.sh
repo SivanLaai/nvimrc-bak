@@ -142,14 +142,14 @@ if [ "$choose" -eq "1" ]; then
 	if [[ -d "${DEST_DIR}" ]]; then
 		mv -f ${DEST_DIR} ${DEST_DIR}_$(date +%Y%m%dT%H%M%S)
 	fi
-	echo "Y - install NeovimDot UI, N - Skip"
+	echo "Y - install MyNeovimRC UI, N - Skip"
 	input
 	choose=$?
 	if [ "$choose" -eq "1" ]; then
-		sudo apt-get install ripgrep fd
+		sudo apt-get install ripgrep #fd
 		mkdir -p ${DEST_DIR}
-		cd ~
-		cp -rf nvimdots ${DEST_DIR}
+		cd ~/nvimrc
+		cp -rf * ${DEST_DIR}
 	fi
 	echo "Y - install packer.nvim, N - Skip"
 	input
