@@ -10,36 +10,32 @@ tools["nvim-telescope/telescope.nvim"] = {
 	requires = {
 		{ "nvim-lua/plenary.nvim", opt = false },
 		{ "nvim-lua/popup.nvim", opt = true },
-		{ "debugloop/telescope-undo.nvim", opt = true },
 	},
-}
-tools["ahmedkhalf/project.nvim"] = {
-	opt = true,
-	after = "telescope.nvim",
-	config = conf.project,
 }
 tools["nvim-telescope/telescope-fzf-native.nvim"] = {
 	opt = true,
 	run = "make",
-	after = "project.nvim",
+	after = "telescope.nvim",
+}
+tools["nvim-telescope/telescope-project.nvim"] = {
+	opt = true,
+	after = "telescope-fzf-native.nvim",
 }
 tools["nvim-telescope/telescope-frecency.nvim"] = {
 	opt = true,
-	after = "telescope-fzf-native.nvim",
+	after = "telescope-project.nvim",
 	requires = { { "kkharji/sqlite.lua", opt = true } },
 }
-tools["jvgrootveld/telescope-zoxide"] = {
-	opt = true,
-	after = "telescope-frecency.nvim",
-}
-tools["nvim-telescope/telescope-live-grep-args.nvim"] = {
-	opt = true,
-	after = "telescope-zoxide",
-}
+tools["jvgrootveld/telescope-zoxide"] = { opt = true, after = "telescope-frecency.nvim" }
 tools["michaelb/sniprun"] = {
 	opt = true,
 	run = "bash ./install.sh",
 	cmd = { "SnipRun", "'<,'>SnipRun" },
+}
+tools["folke/which-key.nvim"] = {
+	opt = true,
+	keys = "<leader>",
+	config = conf.which_key,
 }
 tools["folke/trouble.nvim"] = {
 	opt = true,
@@ -51,21 +47,6 @@ tools["gelguy/wilder.nvim"] = {
 	event = "CmdlineEnter",
 	config = conf.wilder,
 	requires = { { "romgrk/fzy-lua-native", after = "wilder.nvim" } },
-}
--- Please don't remove which-key.nvim otherwise you need to set timeoutlen=300 at `lua/core/options.lua`
-tools["folke/which-key.nvim"] = {
-	opt = false,
-	config = conf.which_key,
-}
-tools["mrjones2014/legendary.nvim"] = {
-	opt = true,
-	cmd = "Legendary",
-	config = conf.legendary,
-	requires = {
-		{ "stevearc/dressing.nvim", opt = false, config = conf.dressing },
-		"kkharji/sqlite.lua",
-		"folke/which-key.nvim",
-	},
 }
 
 return tools

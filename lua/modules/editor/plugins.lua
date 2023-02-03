@@ -62,11 +62,11 @@ editor["phaazon/hop.nvim"] = {
 	event = "BufReadPost",
 	config = conf.hop,
 }
-editor["karb94/neoscroll.nvim"] = {
-	opt = true,
-	event = "BufReadPost",
-	config = conf.neoscroll,
-}
+-- editor["karb94/neoscroll.nvim"] = {
+-- 	opt = true,
+-- 	event = "BufReadPost",
+-- 	config = conf.neoscroll,
+-- }
 editor["akinsho/toggleterm.nvim"] = {
 	opt = true,
 	event = "UIEnter",
@@ -74,7 +74,7 @@ editor["akinsho/toggleterm.nvim"] = {
 }
 editor["NvChad/nvim-colorizer.lua"] = {
 	opt = true,
-	after = "nvim-treesitter",
+	event = "BufReadPost",
 	config = conf.nvim_colorizer,
 }
 editor["rmagatti/auto-session"] = {
@@ -127,7 +127,7 @@ editor["abecodes/tabout.nvim"] = {
 }
 editor["sindrets/diffview.nvim"] = {
 	opt = true,
-	cmd = { "DiffviewOpen", "DiffviewClose" },
+	cmd = { "DiffviewOpen" },
 }
 editor["luukvbaal/stabilize.nvim"] = {
 	opt = true,

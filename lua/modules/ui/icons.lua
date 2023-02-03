@@ -108,7 +108,6 @@ local data = {
 		Perf = "",
 		Project = "",
 		Right = "",
-		RootFolderOpened = "",
 		Search = "",
 		Separator = "",
 		DoubleSeparator = "",

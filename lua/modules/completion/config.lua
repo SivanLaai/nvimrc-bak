@@ -89,15 +89,6 @@ function config.lspsaga()
 			Parameter = { icons.kind.Parameter, colors.blue },
 			StaticMethod = { icons.kind.StaticMethod, colors.peach },
 		},
-		code_action_lightbulb = {
-			enable = false,
-			enable_in_insert = true,
-			cache_code_action = true,
-			sign = true,
-			update_time = 150,
-			sign_priority = 20,
-			virtual_text = true,
-		},
 		symbol_in_winbar = {
 			enable = true,
 			in_custom = false,
@@ -152,13 +143,13 @@ function config.cmp()
 
 	local border = function(hl)
 		return {
-			{ "╭", hl },
+			{ "┌", hl },
 			{ "─", hl },
-			{ "╮", hl },
+			{ "┐", hl },
 			{ "│", hl },
-			{ "╯", hl },
+			{ "┘", hl },
 			{ "─", hl },
-			{ "╰", hl },
+			{ "└", hl },
 			{ "│", hl },
 		}
 	end
@@ -179,9 +170,9 @@ function config.cmp()
 	cmp.setup({
 		window = {
 			completion = {
-				border = border("Normal"),
-				max_width = 80,
-				max_height = 20,
+				winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+				col_offset = -3,
+				side_padding = 0,
 			},
 			documentation = {
 				border = border("CmpDocBorder"),
@@ -349,16 +340,6 @@ function config.mason_install()
 		-- Default: true
 		run_on_start = true,
 	})
-end
-
-function config.copilot()
-	vim.defer_fn(function()
-		require("copilot").setup({
-			filetypes = {
-				["dap-repl"] = false,
-			},
-		})
-	end, 100)
 end
 
 return config

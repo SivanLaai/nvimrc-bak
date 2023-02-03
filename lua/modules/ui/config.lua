@@ -52,7 +52,7 @@ function config.alpha()
 
 	local leader = " "
 	dashboard.section.buttons.val = {
-		button("space f c", " Scheme change", leader, "<cmd>Telescope colorscheme<cr>"),
+		button("space s c", " Scheme change", leader, "<cmd>Telescope colorscheme<cr>"),
 		button("space f r", " File frecency", leader, "<cmd>Telescope frecency<cr>"),
 		button("space f e", " File history", leader, "<cmd>Telescope oldfiles<cr>"),
 		button("space f p", " Project find", leader, "<cmd>Telescope project<cr>"),
@@ -241,7 +241,6 @@ function config.catppuccin()
 					Keyword = { fg = cp.pink },
 					Type = { fg = cp.blue },
 					Typedef = { fg = cp.yellow },
-					StorageClass = { fg = cp.red, style = { "italic" } },
 
 					-- For native lsp configs.
 					DiagnosticVirtualTextError = { bg = cp.none },
@@ -281,7 +280,6 @@ function config.catppuccin()
 					["@constant.builtin"] = { fg = cp.lavender },
 					-- ["@function.builtin"] = { fg = cp.peach, style = { "italic" } },
 					-- ["@type.builtin"] = { fg = cp.yellow, style = { "italic" } },
-					["@type.qualifier"] = { link = "@keyword" },
 					["@variable.builtin"] = { fg = cp.red, style = { "italic" } },
 
 					-- ["@function"] = { fg = cp.blue },
@@ -350,24 +348,6 @@ function config.catppuccin()
 	})
 end
 
-function config.neodim()
-	local normal_background = vim.api.nvim_get_hl_by_name("Normal", true).background
-	local blend_color = normal_background ~= nil and string.format("#%06x", normal_background) or "#000000"
-	require("neodim").setup({
-		alpha = 0.45,
-		blend_color = blend_color,
-		update_in_insert = {
-			enable = true,
-			delay = 100,
-		},
-		hide = {
-			virtual_text = true,
-			signs = false,
-			underline = false,
-		},
-	})
-end
-
 function config.notify()
 	local notify = require("notify")
 	local icons = {
@@ -384,8 +364,6 @@ function config.notify()
 		on_close = nil,
 		---@usage timeout for notifications in ms, default 5000
 		timeout = 2000,
-		-- @usage User render fps value
-		fps = 30,
 		-- Render function for notifications. See notify-render()
 		render = "default",
 		---@usage highlight behind the window for stages that change opacity
@@ -411,7 +389,6 @@ function config.lualine()
 	local icons = {
 		diagnostics = require("modules.ui.icons").get("diagnostics", true),
 		misc = require("modules.ui.icons").get("misc", true),
-		ui = require("modules.ui.icons").get("ui", true),
 	}
 
 	local function escape_status()
@@ -430,15 +407,6 @@ function config.lualine()
 		end
 	end
 
-	local function get_cwd()
-		local cwd = vim.fn.getcwd()
-		local home = os.getenv("HOME")
-		if cwd:find(home, 1, true) == 1 then
-			cwd = "~" .. cwd:sub(#home + 1)
-		end
-		return icons.ui.RootFolderOpened .. cwd
-	end
-
 	local mini_sections = {
 		lualine_a = { "filetype" },
 		lualine_b = {},
@@ -450,10 +418,6 @@ function config.lualine()
 	local outline = {
 		sections = mini_sections,
 		filetypes = { "lspsagaoutline" },
-	}
-	local diffview = {
-		sections = mini_sections,
-		filetypes = { "DiffviewFiles" },
 	}
 
 	local function python_venv()
@@ -490,9 +454,9 @@ function config.lualine()
 			section_separators = { left = "", right = "" },
 		},
 		sections = {
-			lualine_a = { { "mode" } },
+			lualine_a = { "mode" },
 			lualine_b = { { "branch" }, { "diff", source = diff_source } },
-			lualine_c = { { get_cwd } },
+			lualine_c = {},
 			lualine_x = {
 				{ escape_status },
 				{
@@ -537,7 +501,6 @@ function config.lualine()
 			"toggleterm",
 			"fugitive",
 			outline,
-			diffview,
 		},
 	})
 end
@@ -649,7 +612,7 @@ function config.nvim_tree()
 		},
 		update_focused_file = {
 			enable = true,
-			update_root = true,
+			update_root = false,
 			ignore_list = {},
 		},
 		ignore_ft_on_setup = {},
@@ -751,6 +714,13 @@ function config.nvim_bufferline()
 					text = "File Explorer",
 					text_align = "center",
 					padding = 1,
+				},
+				{
+					filetype = "undotree",
+					text = "Undo Tree",
+					text_align = "center",
+					highlight = "Directory",
+					separator = true,
 				},
 			},
 			diagnostics_indicator = function(count)
@@ -881,6 +851,7 @@ function config.indent_blankline()
 			"peekaboo",
 			"git",
 			"TelescopePrompt",
+			"undotree",
 			"flutterToolsOutline",
 			"", -- for all buffers without a file type
 		},

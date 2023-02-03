@@ -2,12 +2,10 @@ local config = {}
 
 function config.telescope()
 	vim.api.nvim_command([[packadd sqlite.lua]])
-	vim.api.nvim_command([[packadd project.nvim]])
 	vim.api.nvim_command([[packadd telescope-fzf-native.nvim]])
+	vim.api.nvim_command([[packadd telescope-project.nvim]])
 	vim.api.nvim_command([[packadd telescope-frecency.nvim]])
 	vim.api.nvim_command([[packadd telescope-zoxide]])
-	vim.api.nvim_command([[packadd telescope-live-grep-args.nvim]])
-	vim.api.nvim_command([[packadd telescope-undo.nvim]])
 
 	local icons = { ui = require("modules.ui.icons").get("ui", true) }
 	local telescope_actions = require("telescope.actions.set")
@@ -22,7 +20,6 @@ function config.telescope()
 			return true
 		end,
 	}
-	local lga_actions = require("telescope-live-grep-args.actions")
 
 	require("telescope").setup({
 		defaults = {
@@ -32,10 +29,12 @@ function config.telescope()
 			entry_prefix = " ",
 			scroll_strategy = "limit",
 			results_title = false,
+			borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
 			layout_strategy = "horizontal",
 			path_display = { "absolute" },
 			file_ignore_patterns = { ".git/", ".cache", "%.class", "%.pdf", "%.mkv", "%.mp4", "%.zip" },
 			layout_config = {
+				prompt_position = "bottom",
 				horizontal = {
 					preview_width = 0.5,
 				},
@@ -58,33 +57,6 @@ function config.telescope()
 				show_unindexed = true,
 				ignore_patterns = { "*.git/*", "*/tmp/*" },
 			},
-			live_grep_args = {
-				auto_quoting = true, -- enable/disable auto-quoting
-				-- define mappings, e.g.
-				mappings = { -- extend mappings
-					i = {
-						["<C-k>"] = lga_actions.quote_prompt(),
-						["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
-					},
-				},
-			},
-			undo = {
-				side_by_side = true,
-				layout_config = {
-					preview_height = 0.8,
-				},
-				mappings = { -- this whole table is the default
-					i = {
-						-- IMPORTANT: Note that telescope-undo must be available when telescope is configured if
-						-- you want to use the following actions. This means installing as a dependency of
-						-- telescope in it's `requirements` and loading this extension from there instead of
-						-- having the separate plugin definition as outlined above. See issue #6.
-						["<cr>"] = require("telescope-undo.actions").yank_additions,
-						["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
-						["<C-cr>"] = require("telescope-undo.actions").restore,
-					},
-				},
-			},
 		},
 		pickers = {
 			buffers = fixfolds,
@@ -98,25 +70,9 @@ function config.telescope()
 
 	require("telescope").load_extension("notify")
 	require("telescope").load_extension("fzf")
-	require("telescope").load_extension("projects")
+	require("telescope").load_extension("project")
 	require("telescope").load_extension("zoxide")
 	require("telescope").load_extension("frecency")
-	require("telescope").load_extension("live_grep_args")
-	require("telescope").load_extension("undo")
-end
-
-function config.project()
-	require("project_nvim").setup({
-		manual_mode = false,
-		detection_methods = { "lsp", "pattern" },
-		patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json" },
-		ignore_lsp = { "efm", "copilot" },
-		exclude_dirs = {},
-		show_hidden = false,
-		silent_chdir = true,
-		scope_chdir = "global",
-		datapath = vim.fn.stdpath("data"),
-	})
 end
 
 function config.trouble()
@@ -133,8 +89,6 @@ function config.trouble()
 		mode = "document_diagnostics", -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
 		fold_open = icons.ui.ArrowOpen, -- icon used for open folds
 		fold_closed = icons.ui.ArrowClosed, -- icon used for closed folds
-		group = true, -- group results by file
-		padding = true, -- add an extra new line on top of the list
 		action_keys = {
 			-- key mappings for actions in the trouble list
 			-- map to {} to remove a mapping, for example:
@@ -162,7 +116,6 @@ function config.trouble()
 		auto_close = false, -- automatically close the list when you have no diagnostics
 		auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
 		auto_fold = false, -- automatically fold a file trouble list at creation
-		auto_jump = { "lsp_definitions" }, -- for the given modes, automatically jump if there is only a single result
 		signs = {
 			-- icons / text used for a diagnostic
 			error = icons.diagnostics.Error_alt,
@@ -171,7 +124,7 @@ function config.trouble()
 			information = icons.diagnostics.Information_alt,
 			other = icons.diagnostics.Question_alt,
 		},
-		use_diagnostic_signs = false, -- enabling this will use the signs defined in your lsp client
+		use_lsp_diagnostic_signs = false, -- enabling this will use the signs defined in your lsp client
 	})
 end
 
@@ -196,6 +149,41 @@ function config.sniprun()
 
 		borders = "shadow", -- " display borders around floating windows
 		-- " possible values are 'none', 'single', 'double', or 'shadow'
+	})
+end
+
+function config.which_key()
+	local icons = {
+		ui = require("modules.ui.icons").get("ui"),
+		misc = require("modules.ui.icons").get("misc"),
+	}
+
+	require("which-key").setup({
+		plugins = {
+			presets = {
+				operators = false,
+				motions = false,
+				text_objects = false,
+				windows = false,
+				nav = false,
+				z = true,
+				g = true,
+			},
+		},
+
+		icons = {
+			breadcrumb = icons.ui.Separator,
+			separator = icons.misc.Vbar,
+			group = icons.misc.Add,
+		},
+
+		window = {
+			border = "none",
+			position = "bottom",
+			margin = { 1, 0, 1, 0 },
+			padding = { 1, 1, 1, 1 },
+			winblend = 0,
+		},
 	})
 end
 
@@ -254,190 +242,6 @@ function config.wilder()
 			substitute = wildmenu_renderer,
 		})
 	)
-end
-
-function config.which_key()
-	local icons = {
-		ui = require("modules.ui.icons").get("ui"),
-		misc = require("modules.ui.icons").get("misc"),
-	}
-
-	require("which-key").setup({
-		plugins = {
-			presets = {
-				operators = false,
-				motions = false,
-				text_objects = false,
-				windows = false,
-				nav = false,
-				z = true,
-				g = true,
-			},
-		},
-
-		icons = {
-			breadcrumb = icons.ui.Separator,
-			separator = icons.misc.Vbar,
-			group = icons.misc.Add,
-		},
-
-		window = {
-			border = "none",
-			position = "bottom",
-			margin = { 1, 0, 1, 0 },
-			padding = { 1, 1, 1, 1 },
-			winblend = 0,
-		},
-	})
-end
-
-function config.legendary()
-	require("legendary").setup({
-		which_key = {
-			auto_register = true,
-			do_binding = false,
-		},
-		scratchpad = {
-			view = "float",
-			results_view = "float",
-			keep_contents = true,
-		},
-		sort = {
-			-- sort most recently used item to the top
-			most_recent_first = true,
-			-- sort user-defined items before built-in items
-			user_items_first = true,
-			frecency = {
-				-- the directory to store the database in
-				db_root = string.format("%s/legendary/", vim.fn.stdpath("data")),
-				-- the maximum number of timestamps for a single item
-				-- to store in the database
-				max_timestamps = 10,
-			},
-		},
-		-- Directory used for caches
-		cache_path = string.format("%s/legendary/", vim.fn.stdpath("cache")),
-		-- Log level, one of 'trace', 'debug', 'info', 'warn', 'error', 'fatal'
-		log_level = "info",
-	})
-
-	require("which-key").register({
-		["<leader>"] = {
-			b = {
-				name = "Bufferline commands",
-				d = "buffer: Sort by directory",
-				e = "buffer: Sort by extension",
-			},
-
-			d = {
-				name = "Dap commands",
-				b = "debug: Toggle breakpoint",
-				d = "debug: Terminate debug session",
-				r = "debug: Continue",
-				l = "debug: Open repl",
-				i = "debug: Step in",
-				o = "debug: Step out",
-				v = "debug: Step over",
-			},
-			f = {
-				name = "Telescope commands",
-				p = "find: Project",
-				w = "find: Word",
-				r = "find: File by frecency",
-				e = "find: File by history",
-				c = "ui: Change color scheme",
-				z = "edit: Change current directory by zoxide",
-				f = "find: File under current work directory",
-				g = "find: File under current git directory",
-				n = "edit: New file",
-			},
-			h = {
-				name = "Gitsigns commands",
-				b = "git: Blame line",
-				p = "git: Preview hunk",
-				s = "git: Stage hunk",
-				u = "git: Undo stage hunk",
-				r = "git: Reset hunk",
-				R = "git: Reset buffer",
-			},
-			l = {
-				name = "LSP commands",
-				i = "lsp: LSP Info",
-				r = "lsp: LSP Restart",
-			},
-			n = {
-				name = "NvimTree commands",
-				f = "filetree: NvimTree find file",
-				r = "filetree: NvimTree refresh",
-			},
-			p = {
-				name = "Packer commands",
-				s = "packer: PackerSync",
-				i = "packer: PackerInstall",
-				c = "packer: PackerClean",
-				u = "packer: PackerUpdate",
-			},
-			s = {
-				name = "Session commands",
-				s = "sesson: Save session",
-				r = "sesson: Restore session",
-				d = "sesson: Delete session",
-			},
-			t = {
-				name = "Trouble commands",
-				d = "lsp: Show document diagnostics",
-				w = "lsp: Show workspace diagnostics",
-				q = "lsp: Show quickfix list",
-				l = "lsp: Show loclist",
-			},
-		},
-		["g"] = {
-			a = "lsp: Code action",
-			d = "lsp: Preview definition",
-			D = "lsp: Goto definition",
-			h = "lsp: Show reference",
-			o = "lsp: Toggle outline",
-			r = "lsp: Rename",
-			s = "lsp: Signature help",
-			t = "lsp: Toggle trouble list",
-			b = "buffer: Buffer pick",
-			p = {
-				name = "git commands",
-				s = "git: Push",
-				l = "git: Pull",
-			},
-		},
-		["<leader>G"] = "git: Show fugitive",
-		["<leader>g"] = "git: Show lazygit",
-		["<leader>D"] = "git: Show diff",
-		["<leader><leader>D"] = "git: Close diff",
-		["]g"] = "git: Goto next hunk",
-		["[g"] = "git: Goto prev hunk",
-		["g["] = "lsp: Goto prev diagnostic",
-		["g]"] = "lsp: Goto next diagnostic",
-		["<leader>w"] = "jump: Goto word",
-		["<leader>j"] = "jump: Goto line",
-		["<leader>k"] = "jump: Goto line",
-		["<leader>c"] = "jump: Goto one char",
-		["<leader>cc"] = "jump: Goto two chars",
-		["<leader>o"] = "edit: Check spell",
-		["<leader>u"] = "edit: Show undo history",
-		["<leader>r"] = "tool: Code snip run",
-		["<F12>"] = "tool: Markdown preview",
-	})
-end
-
-function config.dressing()
-	require("dressing").setup({
-		input = {
-			enabled = true,
-		},
-		select = {
-			enabled = true,
-			backend = "telescope",
-			trim_prompt = true,
-		},
-	})
 end
 
 return config
