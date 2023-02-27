@@ -98,7 +98,7 @@ if [ "$choose" -eq "1" ]; then
 	if [ ! -e "Python-3.8.12.tar.xz" ]; then
 		echo "Downloading Python Install Package."
 		sudo apt-get install build-essential
-		sudo apt install -y zlib1g zlib1g-dev libffi-dev openssl libssl-dev libbz2-dev liblzma-dev libsqlite3-dev
+		sudo apt install -y zlib1g zlib1g-dev libffi-dev openssl libssl-dev libbz2-dev liblzma-dev libsqlite3-dev libmysqlclient-dev
 		wget https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tar.xz
 	fi
 
